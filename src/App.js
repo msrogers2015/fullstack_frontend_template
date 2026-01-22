@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Homepage from "./pages/Homepage";
 import Login from './pages/Auth/Login';
 //Styles
+import './App.scss';
 
 function App() {
   return (

@@ -4,9 +4,11 @@ import publicApi from "../../api/publicApi";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [loginData, setLoginData]  = useState({username: '', password: ''})
+  const navigate = useNavigate()
 
   /**
    * Handles changes within the form and updates the login dictionary.
@@ -18,19 +20,18 @@ function Login() {
     setLoginData(prevState => ({...prevState, [key]: value}))
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     if (loginData.username && loginData.password) { // Login form is fully completed
-      publicApi.post('/auth/login', loginData)
-        .then(res => { // Login is accepted
-          const token = res.data.token
-          sessionStorage.setItem(process.env.REACT_APP_TOKEN, token);
-          sessionStorage.setItem(process.env.REACT_APP_DECODED_TOKEN, JSON.stringify(jwtDecode(token)));
-          console.log('Login successful.')
-        })
-        .catch(err => { // Login is rejected
-          alert(err.response.data.detail)
-        })
+      try {
+        const res = await publicApi.post('/auth/login', loginData);
+        const token = res.data.token;
+        console.log(token)
+        localStorage.setItem(process.env.REACT_APP_TOKEN, token)
+        navigate('/dashboard')
+      } catch (err) {
+        alert(err.response.data.detail)
+      }
     } else if (loginData.username && !loginData.password) { // Login is missing password
       alert('Please enter your password')
     } else if (!loginData.username && loginData.password) { // Login is missing username.

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import Button from 'react-bootstrap/Button';
 import { clearUserData } from "../../utils/Auth";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,6 @@ import { useNavigate } from "react-router-dom";
  * @constructor
  */
 function LogoutButton({buttonType, customClasses=null}) {
-  const [buttonVariant, setButtonVariant] = useState(null)
   const navigate = useNavigate();
 
 

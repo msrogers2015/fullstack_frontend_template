@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { jwtDecode } from "jwt-decode";
 import publicApi from "../../api/publicApi";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -9,6 +8,18 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const [loginData, setLoginData]  = useState({username: '', password: ''})
   const navigate = useNavigate()
+
+
+  /**
+   * Redirect user to the dashboard if a token is present. The redirect will automatically handle validating
+   * the token to ensure it hasn't expired.
+   */
+  useEffect(() => {
+    if (localStorage.getItem(process.env.REACT_APP_TOKEN) !== null) {
+      navigate('/dashboard')
+    }
+  }, []);
+
 
   /**
    * Handles changes within the form and updates the login dictionary.
@@ -20,18 +31,23 @@ function Login() {
     setLoginData(prevState => ({...prevState, [key]: value}))
   }
 
-  const handleSubmit = async (event) => {
+  /**
+   * Checks form inputs to ensure required data is present before sending to the backend. If both the username
+   * and password is present, the backend validates the login and either sends back a token or an error message.
+   * @param event
+   */
+  const handleSubmit = (event) => {
     event.preventDefault()
     if (loginData.username && loginData.password) { // Login form is fully completed
-      try {
-        const res = await publicApi.post('/auth/login', loginData);
-        const token = res.data.token;
-        console.log(token)
-        localStorage.setItem(process.env.REACT_APP_TOKEN, token)
-        navigate('/dashboard')
-      } catch (err) {
-        alert(err.response.data.detail)
-      }
+      publicApi.post('/auth/login', loginData)
+        .then(res => { // Login is accepted
+          const token = res.data.token
+          localStorage.setItem(process.env.REACT_APP_TOKEN, token);
+          navigate('/dashboard')
+        })
+        .catch(err => { // Login is rejected
+          alert(err.response.data.detail)
+        })
     } else if (loginData.username && !loginData.password) { // Login is missing password
       alert('Please enter your password')
     } else if (!loginData.username && loginData.password) { // Login is missing username.
@@ -40,6 +56,7 @@ function Login() {
       alert('Please enter your login details')
     }
   }
+
 
   return (
     <>

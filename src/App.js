@@ -8,6 +8,7 @@ import Login from './pages/Auth/Login';
 import Dashboard from "./pages/Base/Dashboard";
 //Styles
 import './App.scss';
+import UserProfile from "./pages/Users/Profile";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         {/* Protected Routes */}
         <Route element={<ProtectRoutes />}>
           <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/profile' element={<UserProfile />} />
         </Route>
       </Routes>
     </BrowserRouter>

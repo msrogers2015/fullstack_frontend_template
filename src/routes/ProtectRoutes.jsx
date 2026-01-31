@@ -22,7 +22,7 @@ function ProtectedRoutes() {
       setValidToken(false);
       return;
     }
-    privateApi.get('/auth/verify')
+    privateApi.post(`/auth/verify?token=${token}`)
       .then(() => { // Token successfully verified on the backend
         setValidToken(true)
       })
@@ -45,7 +45,11 @@ function ProtectedRoutes() {
    */
   if (validToken === false) {return <Navigate to='/login' />}
 
-  return <Outlet />
+
+  /**
+    * Redirect user to login page upon invalid token.
+  */
+  if (validToken === true) {return <Outlet />}
 }
 
 export default ProtectedRoutes;
